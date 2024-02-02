@@ -1,0 +1,159 @@
+客户基础资料表
+create table user_basic
+(
+    user_id    bigint  		    not null comment '客户id'  primary key,
+    card_id    varchar(40)    null comment '身份证号',
+    tel        varchar(40)    null comment '电话号码',
+    sex        varchar(40)   null comment '性别',
+    plan_id     bigint        null comment '套餐ID',
+    version     int          null comment '版本（乐观锁）',
+    people_name varchar(100) null comment '姓名', 
+    age          int          null comment ‘年龄’,
+    netAccess_time datetime   null comment ‘入网时间’,
+    belong_city    varchar(20)   null  comment '归属地市',
+    belong_country varchar(20)   null  comment '归属县区',
+    blacklist 			boolean  	    false 		comment ‘是否黑名单’,
+    redlist 			  boolean 	    false 		comment ‘是否红名单’,
+    create_time   datetime  default CURRENT_TIMESTAMP  not null  comment '创建日期',
+    update_time datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
+)
+comment '客户基础资料' engine = InnoDB;
+
+
+
+
+
+
+
+
+套餐表
+create table plan
+(
+    plan_id  		    bigint    		  not null comment '套餐ID ' 		primary key,
+    plan_name       varchar(50)		  not null comment '套餐名称',
+    plan_money      DECIMAL         not null comment '套餐费用',
+    plan_data	  	  DECIMAL         not null comment '套餐内流量（GB）',
+    plan_call			  int				      not null comment '套餐内语音通话时长',
+    plan_sms			  int				      not null comment '套餐内短信数量',
+    create_time  		datetime   		  default CURRENT_TIMESTAMP not null   comment '创建日期',
+    update_time    	datetime   		  default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
+)
+    comment '套餐表' engine = InnoDB;
+
+
+客户业务使用行为数据表
+create table usage_data
+(
+    user_id          bigint             not null comment '客户id '   primary key,
+    plan_id          bigint             not null comment '套餐id',
+    money            DECIMAL           not null comment '账户余额',
+    data_usage      DECIMAL			       comment '数据使用量（GB）',
+    call_minutes    int 				      comment '已使用通话分钟数',
+    sms_count       int 				      comment '已使用短信数量',
+    overage_charges DECIMAL		         comment '流量超额费用',
+    create_time      datetime        default CURRENT_TIMESTAMP not null  comment '创建日期',
+    update_time      datetime        default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
+)
+    comment '客户业务使用行为数据'  engine = InnoDB;
+
+
+
+
+
+
+客户标签表
+标签名称 (tag_name): 标签的名称，如“年龄段”、“消费水平”等。
+标签描述 (description): 对标签的详细描述，例如“18-25岁年轻群体”、“高消费客户”等。
+标签类型 (tag_type): 标识标签的类型，比如“年龄”、“消费等级”、“兴趣爱好”等
+
+create table CustomerTags
+(
+   tag_id 		     int 		          AUTO_INCREMENT 	comment '标签id '	PRIMARY KEY,
+   tag_name 	      varchar(255) 			not null 	comment '标签名称',
+   description	   varchar(255)			  not null	comment '标签描述', 
+   tag_type	       varchar(255) 			not null	comment '标签类型',
+   created_time    datetime        DEFAULT CURRENT_TIMESTAMP		comment '创建日期',
+   updated_time     datetime        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 	comment '修改日期'
+) 
+  comment '客户标签'  engine = InnoDB;
+
+
+
+
+
+
+
+
+客户位置数据表
+create table location_data
+(
+    user_id      bigint            not null comment '客户id ' primary key,
+    place_id     bigint            not null comment '基站id',
+    village_id		bigint            not null comment '小区id',
+    create_time  datetime        default CURRENT_TIMESTAMP not null   comment '创建日期',
+    update_time  datetime    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
+) comment '客户位置数据' engine = InnoDB;
+
+
+
+
+
+
+
+目标客户群表
+create table group_rt
+(
+    user_id        bigint         not null comment '客户id '   primary key,
+    preview_id     bigint         not null comment '审批人id',
+    author_id      bigint         not null comment '创建人id',
+    user_group     bigint          not null comment '客户群id',
+    group_name      varchar(255)     not null comment   '客户群备注',
+    member_count    int 				      comment   '群成员数量',
+    group_description varchar(255)		 comment   '群描述',
+    create_time   datetime       default CURRENT_TIMESTAMP not null  comment '创建日期',
+    update_time    datetime    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
+) comment '目标客户群表' engine = InnoDB;
+
+
+
+
+
+
+
+营销用语表
+用语ID (phrase_id): 唯一标识每个营销用语的ID。这是主键。
+产品ID (product_id): 与营销用语相关联的产品ID。
+渠道ID (channel): 表示营销用语使用的渠道，如社交媒体、电子邮件、短信等。
+用语标题 (title): 营销用语的标题或简短描述。
+用语内容 (content): 具体的营销文案或消息。
+目标客户标签 (target_tag_id): 目标客户群体的标签ID，指明这条营销用语是针对哪类客户的。这与前面设计的目标客户群表相关联。
+
+create table marketing_language
+(
+  phrase_id		    int 			    auto_increment 		comment 	'用语id'	primary key,
+  plan_id         bigint        not null comment 		'营销产品' ,
+  channel		      varchar(255)	not null comment 		'营销渠道' ,
+  title			      varchar(255)	not null comment 		'用语标题' ,
+  content	  	    varchar(255)    not null comment   '营销话术',
+  target_tag_id	  int 			      not null comment   	'目标客户标签id',
+  create_time     datetime  	 default CURRENT_TIMESTAMP not null   comment '创建日期',
+  pdate_time	    datetime     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
+)
+    comment '营销用语' engine = InnoDB;
+
+
+
+
+
+
+
+
+已完成的实时营销事件表
+create table Realtime_events(
+  rt_id           bigint          not null comment '事件id ' primary key,
+  rt_event        varchar(255)     not null comment   '事件名称',
+  discription    varchar(255)      null comment    '备注',
+  create_time    datetime         default CURRENT_TIMESTAMP not null                  comment '创建日期',
+  update_time    datetime          default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
+)
+    comment '已完成的实时营销事件 ' engine = InnoDB;

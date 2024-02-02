@@ -8,12 +8,12 @@ create table user_basic
     plan_id     bigint        null comment '套餐ID',
     version     int          null comment '版本（乐观锁）',
     people_name varchar(100) null comment '姓名', 
-    age          int          null comment ‘年龄’,
-    netAccess_time datetime   null comment ‘入网时间’,
+    age          int          null comment '年龄',
+    netAccess_time datetime   null comment '入网时间',
     belong_city    varchar(20)   null  comment '归属地市',
     belong_country varchar(20)   null  comment '归属县区',
-    blacklist 			boolean  	    false 		comment ‘是否黑名单’,
-    redlist 			  boolean 	    false 		comment ‘是否红名单’,
+    blacklist 			  TINYINT(1)        DEFAULT 0  	comment '是否黑名单',
+    redlist 			  TINYINT(1)        DEFAULT 0 	comment '是否红名单',
     create_time   datetime  default CURRENT_TIMESTAMP  not null  comment '创建日期',
     update_time datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
 )
@@ -44,15 +44,15 @@ create table plan
 客户业务使用行为数据表
 create table usage_data
 (
-    user_id          bigint             not null comment '客户id '   primary key,
-    plan_id          bigint             not null comment '套餐id',
-    money            DECIMAL           not null comment '账户余额',
-    data_usage      DECIMAL			       comment '数据使用量（GB）',
-    call_minutes    int 				      comment '已使用通话分钟数',
-    sms_count       int 				      comment '已使用短信数量',
-    overage_charges DECIMAL		         comment '流量超额费用',
-    create_time      datetime        default CURRENT_TIMESTAMP not null  comment '创建日期',
-    update_time      datetime        default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
+    user_id          BIGINT          NOT NULL COMMENT '客户id',
+    plan_id          BIGINT          NOT NULL COMMENT '套餐id',
+    money            DECIMAL(10, 2)  NOT NULL COMMENT '账户余额',
+    data_usage       DECIMAL(10, 2)           COMMENT '数据使用量（GB）',
+    call_minutes     INT                      COMMENT '已使用通话分钟数',
+    sms_count        INT                      COMMENT '已使用短信数量',
+    overage_charges  DECIMAL(10, 2)           COMMENT '流量超额费用',
+    create_time      DATETIME        DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '创建日期',
+    update_time      DATETIME        DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改日期'
 )
     comment '客户业务使用行为数据'  engine = InnoDB;
 
@@ -103,15 +103,16 @@ create table location_data
 目标客户群表
 create table group_rt
 (
-    user_id        bigint         not null comment '客户id '   primary key,
-    preview_id     bigint         not null comment '审批人id',
-    author_id      bigint         not null comment '创建人id',
-    user_group     bigint          not null comment '客户群id',
-    group_name      varchar(255)     not null comment   '客户群备注',
-    member_count    int 				      comment   '群成员数量',
-    group_description varchar(255)		 comment   '群描述',
-    create_time   datetime       default CURRENT_TIMESTAMP not null  comment '创建日期',
-    update_time    datetime    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '唯一标识',
+    user_id         BIGINT         NOT NULL COMMENT '客户id',
+    preview_id      BIGINT         NOT NULL COMMENT '审批人id',
+    author_id       BIGINT         NOT NULL COMMENT '创建人id',
+    user_group      BIGINT         NOT NULL COMMENT '客户群id',
+    group_name      VARCHAR(255)   NOT NULL COMMENT '客户群备注',
+    member_count    INT                     COMMENT '群成员数量',
+    group_description VARCHAR(255)          COMMENT '群描述',
+    create_time     DATETIME       DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '创建日期',
+    update_time     DATETIME       DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改日期'
 ) comment '目标客户群表' engine = InnoDB;
 
 

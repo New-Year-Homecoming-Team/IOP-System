@@ -160,3 +160,40 @@ create table Realtime_events(
   update_time    datetime          default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
 )
     comment '已完成的实时营销事件 ' engine = InnoDB;
+
+客户基础资料表 (user_basic) 与plan表：一对多关系（一个套餐可以被多个用户订购）。
+-- 给 user_basic 表添加外键连接到 plan 表
+ALTER TABLE user_basic ADD CONSTRAINT fk_user_basic_plan FOREIGN KEY (plan_id) REFERENCES plan(plan_id);
+
+user_basic与usage_data表：一对一关系（每个用户有一条使用行为数据）。
+-- 给 usage_data 表添加外键连接到 user_basic 表
+ALTER TABLE usage_data ADD CONSTRAINT fk_usage_data_user_basic FOREIGN KEY (user_id) REFERENCES user_basic(user_id);
+
+user_basic与location_data表：一对一关系（每个用户有一条位置数据）。
+ALTER TABLE location_data ADD CONSTRAINT fk_location_data_user_basic FOREIGN KEY (user_id) REFERENCES user_basic(user_id);
+
+客户业务使用行为数据表 (usage_data)与plan表：一对多（一个套餐可以对应多个用户的使用行为数据）。
+ALTER TABLE usage_data ADD CONSTRAINT fk_usage_data_plan FOREIGN KEY (plan_id) REFERENCES plan(plan_id);
+
+营销用语表 (marketing_language)与plan表：一对一（一个套餐对应一种营销用语）。
+ALTER TABLE marketing_language ADD CONSTRAINT fk_marketing_language_plan FOREIGN KEY (plan_id) REFERENCES plan(plan_id);
+
+user_basic与group_rt：多对多
+创建中间表 user_group_relation
+CREATE TABLE user_group_relation (
+    user_id BIGINT NOT NULL,
+    group_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, group_id),
+    CONSTRAINT fk_user_group_relation_user FOREIGN KEY (user_id) REFERENCES user_basic(user_id),
+    CONSTRAINT fk_user_group_relation_group FOREIGN KEY (group_id) REFERENCES group_rt(id)
+);
+
+user_basic与标签表(CustomerTags):多对多
+创建中间表 user_CustomerTags_relation
+CREATE TABLE user_CustomerTags_relation (
+    user_id BIGINT NOT NULL,
+    tag_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, tag_id),
+    CONSTRAINT fk_user_CustomerTags_relation_user FOREIGN KEY (user_id) REFERENCES user_basic(user_id),
+    CONSTRAINT fk_user_CustomerTags_relation_CustomerTags FOREIGN KEY (tag_id) REFERENCES CustomerTags(tag_id)
+);

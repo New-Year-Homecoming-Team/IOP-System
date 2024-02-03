@@ -186,14 +186,16 @@ CREATE TABLE user_group_relation (
     PRIMARY KEY (user_id, group_id),
     CONSTRAINT fk_user_group_relation_user FOREIGN KEY (user_id) REFERENCES user_basic(user_id),
     CONSTRAINT fk_user_group_relation_group FOREIGN KEY (group_id) REFERENCES group_rt(id)
-);
+)comment '客户群关联表' engine = InnoDB;
 
 user_basic与标签表(CustomerTags):多对多
-创建中间表 user_CustomerTags_relation
-CREATE TABLE user_CustomerTags_relation (
-    user_id BIGINT NOT NULL,
-    tag_id BIGINT NOT NULL,
+创建中间表 UserTagRelation
+CREATE TABLE UserTagRelation
+(
+    user_id bigint NOT NULL,
+    tag_id int NOT NULL,
     PRIMARY KEY (user_id, tag_id),
-    CONSTRAINT fk_user_CustomerTags_relation_user FOREIGN KEY (user_id) REFERENCES user_basic(user_id),
-    CONSTRAINT fk_user_CustomerTags_relation_CustomerTags FOREIGN KEY (tag_id) REFERENCES CustomerTags(tag_id)
-);
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES user_basic (user_id),
+    CONSTRAINT fk_tag_id FOREIGN KEY (tag_id) REFERENCES CustomerTags (tag_id)
+) COMMENT '用户标签关联表' ENGINE = InnoDB;
+

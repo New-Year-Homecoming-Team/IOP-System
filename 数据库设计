@@ -1,15 +1,18 @@
 客户基础资料表
+user_id应为用户的唯一标识
+
 create table user_basic
 (
-    user_id    bigint  		    not null comment '客户id'  primary key,
-    card_id    varchar(40)    null comment '身份证号',
-    tel        varchar(40)    null comment '电话号码',
-    sex        varchar(40)   null comment '性别',
+    id         bigint            primary key comment '主键',
+    user_id    bigint  		    not null unique comment '客户id',
+    user_name  varchar(100)     not null comment '姓名', 
+    card_id    varchar(40)      not null comment '身份证号',
+    age        int            null comment '年龄',
+    tel        varchar(40)    not null comment '电话号码',
+    sex        varchar(40)    null comment '性别',
     plan_id     bigint        null comment '套餐ID',
-    version     int          null comment '版本（乐观锁）',
-    people_name varchar(100) null comment '姓名', 
-    age          int          null comment '年龄',
-    netAccess_time datetime   null comment '入网时间',
+    version     int           null comment '版本（乐观锁）',
+    netAccess_time datetime   not null comment '入网时间',
     belong_city    varchar(20)   null  comment '归属地市',
     belong_country varchar(20)   null  comment '归属县区',
     blacklist 			  TINYINT(1)        DEFAULT 0  	comment '是否黑名单',
@@ -29,13 +32,13 @@ comment '客户基础资料' engine = InnoDB;
 套餐表
 create table plan
 (
-    plan_id  		    bigint    		  not null comment '套餐ID ' 		primary key,
+    plan_id  		bigint    		  not null comment '套餐ID ' 		primary key,
     plan_name       varchar(50)		  not null comment '套餐名称',
-    plan_money      DECIMAL         not null comment '套餐费用',
-    plan_data	  	  DECIMAL         not null comment '套餐内流量（GB）',
-    plan_call			  int				      not null comment '套餐内语音通话时长',
-    plan_sms			  int				      not null comment '套餐内短信数量',
-    create_time  		datetime   		  default CURRENT_TIMESTAMP not null   comment '创建日期',
+    plan_money      DECIMAL(10, 2)    not null comment '套餐费用',
+    plan_data	  	DECIMAL(10, 2)    not null comment '套餐内流量（GB）',
+    plan_call		bigint			  not null comment '套餐内语音通话时长',
+    plan_sms		int				  not null comment '套餐内短信数量',
+    create_time  	datetime   		  default CURRENT_TIMESTAMP not null   comment '创建日期',
     update_time    	datetime   		  default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
 )
     comment '套餐表' engine = InnoDB;
@@ -68,12 +71,12 @@ create table usage_data
 
 create table CustomerTags
 (
-   tag_id 		     int 		          AUTO_INCREMENT 	comment '标签id '	PRIMARY KEY,
-   tag_name 	      varchar(255) 			not null 	comment '标签名称',
-   description	   varchar(255)			  not null	comment '标签描述', 
-   tag_type	       varchar(255) 			not null	comment '标签类型',
+   tag_id 		   int 		        AUTO_INCREMENT 	comment '标签id'	PRIMARY KEY,
+   tag_name 	   varchar(255) 	not null 	comment '标签名称',
+   description	   varchar(255)		not null	comment '标签描述', 
+   tag_type	       varchar(255) 	not null	comment '标签类型',
    created_time    datetime        DEFAULT CURRENT_TIMESTAMP		comment '创建日期',
-   updated_time     datetime        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 	comment '修改日期'
+   updated_time    datetime        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 	comment '修改日期'
 ) 
   comment '客户标签'  engine = InnoDB;
 
@@ -87,9 +90,9 @@ create table CustomerTags
 客户位置数据表
 create table location_data
 (
-    user_id      bigint            not null comment '客户id ' primary key,
+    user_id      bigint            not null comment '客户id' primary key,
     place_id     bigint            not null comment '基站id',
-    village_id		bigint            not null comment '小区id',
+    village_id	 bigint            not null comment '小区id',
     create_time  datetime        default CURRENT_TIMESTAMP not null   comment '创建日期',
     update_time  datetime    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
 ) comment '客户位置数据' engine = InnoDB;
@@ -127,16 +130,15 @@ create table group_rt
 渠道ID (channel): 表示营销用语使用的渠道，如社交媒体、电子邮件、短信等。
 用语标题 (title): 营销用语的标题或简短描述。
 用语内容 (content): 具体的营销文案或消息。
-目标客户标签 (target_tag_id): 目标客户群体的标签ID，指明这条营销用语是针对哪类客户的。这与前面设计的目标客户群表相关联。
+
 
 create table marketing_language
 (
   phrase_id		    int 			    auto_increment 		comment 	'用语id'	primary key,
-  plan_id         bigint        not null comment 		'营销产品' ,
-  channel		      varchar(255)	not null comment 		'营销渠道' ,
-  title			      varchar(255)	not null comment 		'用语标题' ,
-  content	  	    varchar(255)    not null comment   '营销话术',
-  target_tag_id	  int 			      not null comment   	'目标客户标签id',
+  plan_id         bigint        not null comment 	'营销产品' ,
+  channel		  varchar(255)	not null comment 	'营销渠道' ,
+  title			  varchar(255)	not null comment 	'用语标题' ,
+  content	  	  varchar(255)  not null comment   '营销话术',
   create_time     datetime  	 default CURRENT_TIMESTAMP not null   comment '创建日期',
   pdate_time	    datetime     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
 )

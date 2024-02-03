@@ -3,13 +3,13 @@ user_id应为用户的唯一标识
 
 create table user_basic
 (
-    id         bigint            primary key comment '主键',
+    id         bigint            primary key auto_increment comment '主键',
     user_id    bigint  		    not null unique comment '客户id',
     user_name  varchar(100)     not null comment '姓名', 
     card_id    varchar(40)      not null comment '身份证号',
     age        int            null comment '年龄',
     tel        varchar(40)    not null comment '电话号码',
-    sex        varchar(40)    null comment '性别',
+    sex        char(1)    null comment '性别',
     plan_id     bigint        null comment '套餐ID',
     version     int           null comment '版本（乐观锁）',
     netAccess_time datetime   not null comment '入网时间',
@@ -32,7 +32,7 @@ comment '客户基础资料' engine = InnoDB;
 套餐表
 create table plan
 (
-    plan_id  		bigint    		  not null comment '套餐ID ' 		primary key,
+    plan_id  		bigint    		  not null comment '套餐ID' 	primary key,
     plan_name       varchar(50)		  not null comment '套餐名称',
     plan_money      DECIMAL(10, 2)    not null comment '套餐费用',
     plan_data	  	DECIMAL(10, 2)    not null comment '套餐内流量（GB）',

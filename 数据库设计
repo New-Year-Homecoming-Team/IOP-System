@@ -1,6 +1,7 @@
 员工表
 CREATE TABLE staff_members (
-    StaffID INT AUTO_INCREMENT PRIMARY KEY COMMENT '工作人员ID，唯一标识符，自增主键',
+    id         bigint            primary key auto_increment comment '主键',
+    StaffID INT  NOT NUL COMMENT '工作人员ID',
     Name VARCHAR(255) NOT NULL COMMENT '姓名',
     Position VARCHAR(255) NOT NULL COMMENT '岗位',
     Phone VARCHAR(20) COMMENT '工作人员的联系电话',

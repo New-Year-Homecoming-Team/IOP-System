@@ -1,8 +1,7 @@
 员工表
 CREATE TABLE staff_members (
-    id         bigint            primary key auto_increment comment '主键',
-    StaffID INT  NOT NUL COMMENT '工作人员ID',
-    Name VARCHAR(255) NOT NULL COMMENT '姓名',
+    StaffID BIGINT primary key auto_increment COMMENT '工作人员ID',
+    Name VARCHAR(50) NOT NULL COMMENT '姓名',
     Position VARCHAR(255) NOT NULL COMMENT '岗位',
     Phone VARCHAR(20) COMMENT '工作人员的联系电话',
     Email VARCHAR(255) COMMENT '工作人员的电子邮箱地址',
@@ -157,8 +156,8 @@ CREATE TABLE marketing_activities (
     Title VARCHAR(255) COMMENT '邮件标题，如果发送类型为邮件，用户输入的邮件标题',
     Content TEXT COMMENT '邮件内容，如果发送类型为邮件，用户输入的邮件内容',
     LinkURL VARCHAR(255) COMMENT '附件链接，如果活动包含链接，用户输入的URL',
-    CreatorName VARCHAR(255) NOT NULL COMMENT '创建者，记录创建活动的人员名称',
-    CreatorID VARCHAR(255) NOT NULL COMMENT '创建者ID'
+    CreatorName VARCHAR(50) NOT NULL COMMENT '创建者，记录创建活动的人员名称',
+    CreatorID BIGINT NOT NULL COMMENT '创建者ID'
 ) ENGINE=InnoDB  COMMENT='营销活动表，用于存储营销活动的详细信息';
 
 

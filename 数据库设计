@@ -1,3 +1,15 @@
+员工表
+CREATE TABLE staff_members (
+    StaffID INT AUTO_INCREMENT PRIMARY KEY COMMENT '工作人员ID，唯一标识符，自增主键',
+    Name VARCHAR(255) NOT NULL COMMENT '姓名',
+    Position VARCHAR(255) NOT NULL COMMENT '岗位',
+    Phone VARCHAR(20) COMMENT '工作人员的联系电话',
+    Email VARCHAR(255) COMMENT '工作人员的电子邮箱地址',
+    Status ENUM('在职', '离职', '休假') NOT NULL DEFAULT '在职' COMMENT '标识工作人员的在职状态'
+) ENGINE=InnoDB COMMENT='工作人员表，用于存储营销系统中管理人员的信息';
+
+
+
 客户基础资料表
 user_id应为用户的唯一标识
 
@@ -21,9 +33,6 @@ create table user_basic
     update_time datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
 )
 comment '客户基础资料' engine = InnoDB;
-
-
-
 
 
 
@@ -62,8 +71,6 @@ create table usage_data
 
 
 
-
-
 客户标签表
 标签名称 (tag_name): 标签的名称，如“年龄段”、“消费水平”等。
 标签描述 (description): 对标签的详细描述，例如“18-25岁年轻群体”、“高消费客户”等。
@@ -82,11 +89,6 @@ create table CustomerTags
 
 
 
-
-
-
-
-
 客户位置数据表
 create table location_data
 (
@@ -96,10 +98,6 @@ create table location_data
     create_time  datetime        default CURRENT_TIMESTAMP not null   comment '创建日期',
     update_time  datetime    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
 ) comment '客户位置数据' engine = InnoDB;
-
-
-
-
 
 
 
@@ -117,8 +115,6 @@ create table group_rt
     create_time     DATETIME       DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '创建日期',
     update_time     DATETIME       DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改日期'
 ) comment '目标客户群表' engine = InnoDB;
-
-
 
 
 
@@ -146,12 +142,27 @@ create table marketing_language
 
 
 
+营销活动表
+
+CREATE TABLE marketing_activities (
+    ID INT AUTO_INCREMENT PRIMARY KEY COMMENT '唯一标识符，自增主键',
+    ActivityName VARCHAR(255) NOT NULL COMMENT '活动名称，用户输入的营销活动名称',
+    ActivityType VARCHAR(255) NOT NULL COMMENT '活动模板类型',
+    ActivityProvider VARCHAR(255) COMMENT '提供商，指出营销活动的服务提供商',
+    ActivitySource VARCHAR(255) COMMENT '活动来源，标识活动是自有平台还是CRM平台等',
+    ActivityStatus ENUM('定时', '实时') NOT NULL COMMENT '活动状态，活动是定时发送还是实时发送',
+    SendType ENUM('邮件', '短信', 'CRM消息') NOT NULL COMMENT '发送类型，用户选择的活动发送方式',
+    SMTPSetting VARCHAR(255) COMMENT 'SMTP设置，如果发送类型为邮件，用户设置的SMTP服务',
+    Title VARCHAR(255) COMMENT '邮件标题，如果发送类型为邮件，用户输入的邮件标题',
+    Content TEXT COMMENT '邮件内容，如果发送类型为邮件，用户输入的邮件内容',
+    LinkURL VARCHAR(255) COMMENT '附件链接，如果活动包含链接，用户输入的URL',
+    CreatorName VARCHAR(255) NOT NULL COMMENT '创建者，记录创建活动的人员名称',
+    CreatorID VARCHAR(255) NOT NULL COMMENT '创建者ID'
+) ENGINE=InnoDB  COMMENT='营销活动表，用于存储营销活动的详细信息';
 
 
 
-
-
-已完成的实时营销事件表
+已完成的营销事件表
 create table Realtime_events(
   rt_id           bigint          not null comment '事件id ' primary key,
   rt_event        varchar(255)     not null comment   '事件名称',
@@ -159,7 +170,7 @@ create table Realtime_events(
   create_time    datetime         default CURRENT_TIMESTAMP not null                  comment '创建日期',
   update_time    datetime          default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP   comment '修改日期'
 )
-    comment '已完成的实时营销事件 ' engine = InnoDB;
+    comment '已完成的营销事件 ' engine = InnoDB;
 
 客户基础资料表 (user_basic) 与plan表：一对多关系（一个套餐可以被多个用户订购）。
 -- 给 user_basic 表添加外键连接到 plan 表
@@ -199,3 +210,19 @@ CREATE TABLE UserTagRelation
     CONSTRAINT fk_tag_id FOREIGN KEY (tag_id) REFERENCES CustomerTags (tag_id)
 ) COMMENT '用户标签关联表' ENGINE = InnoDB;
 
+员工表 (staff_members) 与营销活动表 (marketing_activities): 
+在营销活动表中为创建者（CreatorID）设置一个外键，指向员工表的StaffID。
+ALTER TABLE marketing_activities 
+ADD CONSTRAINT fk_marketing_activities_creator 
+FOREIGN KEY (CreatorID) REFERENCES staff_members (StaffID);
+
+
+员工表 (staff_members) 与其他表的关系: 
+员工负责客户群管理、审批等，员工ID需要与客户群表（group_rt）中的审批人ID（preview_id）和创建人ID（author_id）建立外键关系。
+ALTER TABLE group_rt 
+ADD CONSTRAINT fk_group_rt_preview 
+FOREIGN KEY (preview_id) REFERENCES staff_members (StaffID);
+
+ALTER TABLE group_rt 
+ADD CONSTRAINT fk_group_rt_author 
+FOREIGN KEY (author_id) REFERENCES staff_members (StaffID);
